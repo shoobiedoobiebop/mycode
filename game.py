@@ -3,16 +3,16 @@ from random import randint
 import dice
 import sys
 import os
-'''Chad's Ongoing RPG Game'''
+'''Chad AND KEN'S Ongoing RPG Game'''
 
-bestiary = [{'name' : 'goblin', 'health' : 10, 'damage' : '1d5'},
-            {'name' : 'orc', 'health' : 15, 'damage' : '1d8'},
-            {'name' : 'ogre', 'health' : 20, 'damage' : '1d12'}]
-armory = {'sword': {'damage': '1d12'}}
-spell_lookup = {'fireball': {'damage': '4d6'}, 'lightning':{'damage': '6d8'}}
+bestiary = [{'name' : 'A bandit', 'health' : 10, 'damage' : '1d5'},
+            {'name' : 'The Corrupt Sheriff', 'health' : 15, 'damage' : '1d8'},
+            {'name' : 'Bad Chad', 'health' : 20, 'damage' : '1d12'}]
+armory = {'knife': {'damage': '1d12'},'brass_knuckles':{'damage':'1d12'}}
+gun_lookup = {'pistol': {'damage': '4d6'}, 'shotgun':{'damage': '6d8'}}
 player_health = 20
 inventory = []
-spellbook = []
+holster = []
 
 def combat():
     monster_ID= randint(0,2)
@@ -21,13 +21,13 @@ def combat():
     round = 1
     monster_health = bestiary[monster_ID]['health']
 
-    print(f"A ferocious {bestiary[monster_ID]['name']} approaches! COMBAT HAS BEGUN!\n")
+    print(f"{bestiary[monster_ID]['name']} approaches! COMBAT HAS BEGUN!\n")
     while True:
         print(f"ROUND {round}")
         print("Player Health: [" + str(player_health) + "]")
-        print("Monster Health: [" + str(monster_health) + "]")
+        print("Villain Health: [" + str(monster_health) + "]")
 
-        print("Type: RUN, CAST [spell], or USE [weapon]") # gotta write code for cast
+        print("Type: RUN, SHOOT [gun], or USE [weapon]") # gotta write code for cast
         move = input().lower().split() # converts move into a lower-case list to deal with each item in list separately
         monster_damage = sum(dice.roll(bestiary[monster_ID]['damage']))
         print("\n=========================")
@@ -40,16 +40,16 @@ def combat():
             if move[1] not in inventory:
                 print(f"There is no {move[1]} in your inventory!")
 
-        if move[0] == 'cast': #
-            if move[1] in spellbook: # checks if spell is in your spellbook
-                if move[1].lower() == 'lightning':
-                    player_damage = sum(dice.roll(spell_lookup[move[1]]['damage']))
-                    print(f"The skys darken. You hear the clap of thunder and see the blinding flash of light as a bolt of lightning electricutes the {bestiary[monster_ID]['name']} for {player_damage} damage!")
-                if move[1].lower() == 'fireball':
-                    player_damage = sum(dice.roll(spell_lookup[move[1]]['damage']))
-                    print(f"Summoning eldritch forces, you scorch the {bestiary[monster_ID]['name']} for {player_damage} damage!")
-            if move[1] not in spellbook:
-                print(f"You don't know the {move[1]} spell!")
+        if move[0] == 'shoot': #
+            if move[1] in holster: # checks if spell is in your spellbook
+                if move[1].lower() == 'shotgun':
+                    player_damage = sum(dice.roll(gun_lookup[move[1]]['damage']))
+                    print(f"You raise the shotgun to your shoulder. You feel the kick as smoke and fire explodes from the barrell. You hit {bestiary[monster_ID]['name']} for {player_damage} damage!")
+                if move[1].lower() == 'pistol':
+                    player_damage = sum(dice.roll(gun_lookup[move[1]]['damage']))
+                    print(f"Your hand drops to your holster. In a split second you draw and fire from your hip hitting {bestiary[monster_ID]['name']} for {player_damage} damage!")
+            if move[1] not in holster:
+                print(f"You don't have a {move[1]}!")
 
         if move[0] == 'run': #
             escape_chance= randint(1,10) #+ player_speed # if I set this variable later, here's where it would work
@@ -58,45 +58,45 @@ def combat():
                 print("You make a flawless escape!")
                 break
             if escape_chance >= 5:
-                print("You expose your back as you turn and flee- the monster takes advantage.")
+                print("You expose your back as you turn and flee- the villain takes advantage.")
                 print(f"A {bestiary[monster_ID]['name']} hits you for {monster_damage} damage!")
                 player_health -= int(monster_damage)
                 if player_health >= 1:
                     print("You managed to escape.")
                     break
                 if player_health < 1:
-                    print("You have been slain.")
-                    print("\nGAME OVER")
+                    print("Sorry Partner. Looks like you didn't make it.")
+                    print("\nGAME OVER\nY'all come back now!")
                     sys.exit()
             if escape_chance >= 0:
-                print("The monster out-maneuvers you and attacks! You do not escape.")
+                print("The villain out-maneuvers you and attacks! You do not escape.")
 
         try:
             monster_health -= int(player_damage)
         except:
             pass
         if monster_health <= 0:
-            print(f"The {bestiary[monster_ID]['name']} lies dead. You are victorious!\n")
+            print(f"{bestiary[monster_ID]['name']} lies dead. You are victorious!\n")
             break
 
-        print(f"A {bestiary[monster_ID]['name']} hits you for {monster_damage} damage!")
+        print(f"{bestiary[monster_ID]['name']} hits you for {monster_damage} damage!")
         print ("=========================\n")
         round += 1
         player_health -= int(monster_damage)
 
         if player_health <= 0:
-            print("You have been vanquished! You are dead.")
+            print("They got the better of you this time! You are dead.")
             sys.exit()
 
 def showInstructions():
     print('''
-CHAD'S RPG GAME
-OBJECTIVE: Collect spells and weapons- fight and survive!
+CHAD and KEN's RPG GAME
+OBJECTIVE: Collect items and weapons - get the loot and get out alive!
 --------
 Actions:
     GO [north, south, east, west, up, down]
-    GET [item, spell]
-    USE [item, spell]
+    GET [item, gun]
+    USE [item, gun]
     LOOK
     INV/INVENTORY
 
@@ -107,7 +107,7 @@ def playerinfo():
     print(currentRoom)
     print('=================================')
     print('Inventory :', str(inventory))
-    print('Spells :', str(spellbook))
+    print('Guns :', str(holster))
     print('=================================')
 
 
@@ -116,67 +116,114 @@ def showStatus(): # display the player's status
         print(rooms[currentRoom]['desc'])
     if 'item' in rooms[currentRoom]:
         print('You see a ' + rooms[currentRoom]['item'] + rooms[currentRoom]['item_status'] + '.')
-    if 'spell' in rooms[currentRoom]:
-        print('You see a magic scroll. On the ribbon it says "' + rooms[currentRoom]['spell'] + '".')
+    if 'gun' in rooms[currentRoom]:
+        print('Out of the corner of your eye, you spot a "' + rooms[currentRoom]['gun'] + '".')
 #    print('=================')
 
 def spellreceive(incantation):
  #   print("You received a new spell scroll. Be careful... magic is dangerous!")
  #   incantation = input("Create the magic word to summon your spell! >")
  #   if incantation not in spells:
-        print("\nA pentagram illuminates beneath your feet as an unnatural wind sweeps your hair.")
-        print("The spell has been successfully added to your spellbook. Be careful... magic is dangerous!")
+        print("\nIt feels heavier than you imagined. Cold steel in your hand.")
+        print("The gun has successfully been added to your holster. Be careful... guns are dangerous!")
 
 def random_encounter():
     if ((int(rooms[currentRoom]['randenc'])) + 5) >= 10:
         combat()
 
 rooms = {
-        'HALL' : {
-            'south' : 'KITCHEN',
-            'east' : 'DINING ROOM',
-            'item' : 'sword',
-            'item_status' : ' inside of a display case. It is unlocked',
-            'randenc' : '20',
-            'desc' : 'You are in the hall of a large, decrepit house. The walls are blackened from some ancient fire. You get the feeling you are being watched. To the east is a dusty dining room. South is the kitchen... something is moving there.'
+        'SOUTH MAIN STREET' : {
+            'south' : 'SOUTH GATE',
+            'east' : 'SALOON',
+            'north' : 'NORTH MAIN STREET',
+            'west' : 'HOTEL',
+            'item' : 'knife',
+            'item_status' : ' partially buried in the mud. It is rusty and dull.',
+            'randenc' : '5',
+            'desc' : 'You are standing on Main Street, which runs from north to south \non the southern edge of town. The road is muddy, rutted out by wagons. \nTo your south is the gate leading out of town to the dusty open prairie and vast nothingness. \nTo your north is the the northern side of town. To your east is a saloon, \nyou can hear the voices and the sound of a player piano inside. \nTo your west is the Hotel, the rooms are small and simple, but the rates are fair.',
             },
-        'KITCHEN' : {
-            'north' : 'HALL',
-            'randenc' : '0',
-            'down' : 'BASEMENT',
-            'desc' : 'You are in what was once a kitchen. Nests made of human bones are draped across every countertop. To the north is the Hall. There is a large hole in the floor. Where it leads you have no idea.'
-            },
-        'BASEMENT' : {
-            'spell' : 'fireball',
-            'desc' : 'You are in a stinking basement with an earthen floor. You can\'t even see your hand in front of your face. You are likely to be eaten by a grue. Above you is the Kitchen',
-            'randenc' : '0',
-            'up': 'KITCHEN',
-            },
-        'DINING ROOM' : {
-            'west' : 'HALL',
-            'south' : 'GARDEN',
-            'north' : 'PANTRY',
-            'desc' : 'You are in the dining room. The table is set for an elegant party but is covered a blanket of dust. Sleeping bats cling to the chandelier. North is a dark pantry. South lies the garden. West returns to the hall.',
+        'SOUTH GATE' : {
+            'north' : 'SOUTH MAIN STREET',
+            'south' : 'PRAIRIE', 
             'randenc' : '0',
             'item' : 'potion',
-            'item_status' : ' hiding among the bottles of wine. It is cherry red in color'
+            'item_status' : ' lashed to a fence post. It is a small leather pouch adorned with beads and eagle feathers. \nSomething is inside.',
+            'desc' : 'You stand at the edge of town. As you stare into the empty prairie, \nwatching the wagon tracks as they fade off into the distance, \nyou contemplate your life, and the decisions that brought you to this point.',
             },
-        'GARDEN' : {
-            'north' : 'DINING ROOM',
-            'desc' : 'You enter the crumbling remains of the Garden. The beds and statues are overgrown with weeds and climbing thorny vines. Going north will take you back into the Dining Room.',
-            'spell' : 'lightning',
+        'PRAIRIE' : {
+            'north' : 'SOUTH GATE',
+            'desc' : 'There is nothing here, except open rolling hills of grass.',
+            'randenc' : '0',
+        },
+        'SALOON' : {
+            'gun' : 'pistol',
+            'desc' : 'There is loud music coming from the player piano in the corner. \nMen are drinking whiskey and playing poker, everyone seems to be having a good time. \nThrough the back door is an alley.',
+            'randenc' : '20',
+            'west' : 'SOUTH MAIN STREET',
+            'east' : 'EAST ALLEY',
+            },
+        'HOTEL' : {
+            'west' : 'WEST ALLEY',
+            'east' : 'SOUTH MAIN STREET',
+            'desc' : ' On the west side of Main street. You are in the dining room of the hotel. \nThere are 4 tables, one of wich is occupied by a plump specticaled man reading a paper. \nThe headline reads : BANK ROBBER ESCAPES JAIL AND IS ON THE LOOSE. \nContinuing through the Hotel leads you to an alley on the west side of town.',
+            'randenc' : '10',
+            'item' : 'brass_knuckles',
+            'item_status' : ' carelessly dropped by a cowboy on his way out.',
+            },
+        'EAST ALLEY' : {
+            'north' : 'BANK',
+            'west' : 'SALOON',
+            'desc' : 'Standing in the alley, you notice no tracks on the muddy ground. To the north is the towns only bank.',
             'randenc' : '0',
             },
-        'PANTRY' : {
-            'south' : 'DINING ROOM',
-            'desc' : 'You step into a darkened large panrty. To the south is the Dining room. Though once filled with food, the shelves now only hold dust.',
+        'WEST ALLEY' : {
+            'west' : 'GENERAL STORE',
+            'east' : 'HOTEL',
+            'desc' : 'Boot prints litter the muddy alley. A clear sign of the heavy foot traffic to the General Store to the west.',
+            'randenc' : '5',
+            },
+        'NORTH MAIN STREET' : {
+            'south' : 'SOUTH MAIN STREET',
+            'north' : 'NORTH GATE',
+            'east' : 'JAIL HOUSE',
+            'west' : 'COURTHOUSE',
+            'item' : 'horse',
+            'item_status' : ' his reins tied to a railing in front of the Courthouse to the west. /nI guess the judge said he had to wait outside.',
+            'randenc' : '15',
+        },
+        'JAIL HOUSE' : {
+            'west' : 'NORTH MAIN STREET',
+            'gun' : 'shotgun',
+            'desc' : 'All the cells are empty. To the west is Main Street.',
+            'randenc' : '25'
+        }, 
+        'COURTHOUSE' : {
+          'east' : 'NORTH MAIN STREET',
+          'desc' : 'You open the door, interrupting a trial. \nAngry turn and are looking at you. \Best skedaddle before you are standing at the gallows next to that poor cowboy up there in chains.',
+          'randenc' : '30',
+        },
+        'NORTH GATE' : {
+            'south' : 'NORTH MAIN STREET',
+            'desc' : 'At the northen edge of town, you are faced with jagged formitable mountains. \nImmense in both their beauty and stature. There is no escape that direction.',
             'randenc' : '0',
-            'item' : 'cookie',
-            'item_status' : ' On a dusty shelf, you spot a chocolate chip cookie. It looks stale.',
-            }
+        },
+        'BANK' : {
+            'south' : 'EAST ALLEY',
+            'desc' : 'You burst in through the door on the south side of the building with your gun drawn. \nThe bandana over your face masks your identity. \nYou catch the teller by surprise, he has no time to react.',
+            'item' : 'money',
+            'item_status' : ' stuffed into a burlap sack. Sitting on the counter.',
+            'randenc' : '40',
+        },
+        'GENERAL STORE' : {
+            'east' : 'WEST ALLEY',
+            'desc' : 'Dusty but neat. Everything a homesteader needs to survive on this harsh frontier. \nTo the east is the alley which leads back to the Hotel.',
+            'item' : 'ham',
+            'item_status' : ' sitting on the shelf amongst the other wares. \nThe cured ham seems delicious as you hear your stomach growl. \nThe shopkeep has his back turned as he helps another customer. ',
+            'randenc' : '5',
+        }
         }
 
-currentRoom = 'HALL'   # player start location
+currentRoom = 'SOUTH MAIN STREET'   # player start location
 
 os.system('clear') # start game with a fresh screen
 showInstructions()     # show instructions to the player
@@ -201,25 +248,25 @@ while True:   # MAIN INFINITE LOOP
             # if YES that direction exists, then assign your new current room to the VALUE of the key the user entered
         else:
             print("YOU CAN'T GO THAT WAY!")
+    if currentRoom == rooms['PRAIRIE'] and 'money' in inventory:
+        print('You made it out of town, money in hand. Congradulations Partner! \n YOU WIN!')
+        sys.exit()
     if move[0] == 'use':
-        if move[1].lower() == 'cookie' and 'cookie' in inventory:
-            print('As you bite into the cookie, you feel a rush of energy. Your health has been increased!')
-            print('You wipe the from your shirt.')
+        if move[1].lower() == 'ham' and 'ham' in inventory:
+            print('As you bite into the ham, you feel a rush of energy. Your health has been increased!')
             player_health += 10
-            del inventory['cookie']
         if move[1].lower() == 'potion' and 'potion' in inventory:
-            print("You drink from the potion. Your health has been restored!")
-            print("Your potion magically refills itself! Handy!")
+            print("You eat a small seed from the leather pouch. Your health has been restored!")
             player_health = 20
     if move[0] == 'get':
         if 'item' in rooms[currentRoom] and move[1] in rooms[currentRoom]['item']:
             inventory += [move[1]] # add item to inv
             print(move[1].capitalize() + ' received!') # msg saying you received the item
             del rooms[currentRoom]['item'] # deletes that item from the dictionary
-        elif 'spell' in rooms[currentRoom] and move[1] in rooms[currentRoom]['spell']:
-                spellreceive('spell')
-                spellbook += [move[1]]  # add spell to spells
-                del rooms[currentRoom]['spell']
+        elif 'gun' in rooms[currentRoom] and move[1] in rooms[currentRoom]['gun']:
+                spellreceive('gun')
+                holster += [move[1]]  # add spell to spells
+                del rooms[currentRoom]['gun']
 
         else:
             print('YOU CANNOT GET ' + (move[1].upper()) + '!')
@@ -240,4 +287,4 @@ while True:   # MAIN INFINITE LOOP
             print("Thanks for playing!")
             sys.exit()
         else:
-            pass
+            pass               
